@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group = 'org.aryo'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation("org.seleniumhq.selenium:selenium-java:4.31.0")
+    testImplementation("org.junit.vintage:junit-vintage-engine:5.13.0-M2")
+    implementation("io.cucumber:cucumber-java:7.22.0")
+    testImplementation("io.cucumber:cucumber-junit:7.22.0")
+    implementation 'net.java.dev.jna:jna:5.14.0'
+    testImplementation("io.rest-assured:rest-assured:5.5.1")
+    implementation("org.json:json:20250107")
+    implementation("io.rest-assured:json-path:5.5.1")
+    implementation("io.rest-assured:json-schema-validator:5.5.1")
+    testImplementation("org.assertj:assertj-core:4.0.0-M1")
+    implementation 'io.github.bonigarcia:webdrivermanager:5.9.3'
+    testImplementation 'org.assertj:assertj-core:3.25.3'
+}
+
+test {
+    useJUnit()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+def tags = (findProperty('tags') == null) ? 'not @exclude' : findProperty('tags') + ' and not @exclude'
+
+task cucumber(){
+    description("Running Cucumber Test")
+    dependsOn assemble, compileTestJava
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.test.output
+            args = [
+                    '--plugin', 'html:reports/test-report.html',
+                    '--plugin', 'pretty',
+                    '--glue', 'stepDef',
+                    '--tags', "${tags}",
+                    'src/test/java/features'
+            ]
+        }
+    }
+}
+
+// Untuk API Testing dengan RestAssured
+task apiTest(type: Test) {
+    description("Running API Tests")
+    useJUnitPlatform()
+    include '**/api/**'  // Sesuaikan dengan package test API Anda
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    // Konfigurasi khusus RestAssured
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+}
