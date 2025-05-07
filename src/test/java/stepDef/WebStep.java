@@ -1,5 +1,6 @@
 package stepDef;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -16,6 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.WebPage;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -130,6 +133,97 @@ public class WebStep {
         alert.accept();
     } catch (TimeoutException e) {
             Assert.fail("Alert with message '" + expectedMessage + "' not found within timeout period");
+        }
+    }
+
+    @When("user choose product {string}")
+    public void user_choose_product(String productName) {
+        webPage.selectProduct(productName);
+    }
+
+    @When("user click {string} button")
+    public void user_click_button(String buttonName) {
+        // Handle multiple buttons by name
+        switch (buttonName.toLowerCase()) {
+            case "add to cart":
+                webPage.addToCart();
+                // Tangani alert 'Product added'
+                try {
+                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+                    wait.until(ExpectedConditions.alertIsPresent());
+                    Alert alert = driver.switchTo().alert();
+                    System.out.println("Alert text: " + alert.getText());
+                    alert.accept();
+                } catch (NoAlertPresentException e) {
+                    // Tidak ada alert, lanjutkan
+                }
+                break;
+            case "cart":
+                webPage.goToCart();
+                break;
+            case "place order":
+                webPage.placeOrder();
+                break;
+            case "purchase":
+                webPage.clickPurchaseButton();
+                // Tangani konfirmasi pembelian
+                handlePurchaseConfirmation();
+                break;
+            default:
+                throw new IllegalArgumentException("Button name not recognized: " + buttonName);
+        }
+    }
+
+    private void handlePurchaseConfirmation() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            // Tunggu hingga pesan konfirmasi muncul
+            WebElement confirmationMessageElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(), 'Thank you for your purchase!')]")));
+
+            // Ambil teks pesan konfirmasi
+            String actualMessage = confirmationMessageElement.getText();
+            System.out.println("Confirmation message: " + actualMessage);
+
+            // Klik tombol OK pada modal konfirmasi
+            WebElement okButton = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("button.confirm.btn.btn-lg.btn-primary")));
+            okButton.click();
+        } catch (TimeoutException e) {
+            Assert.fail("Confirmation message did not appear within the timeout period.");
+        }
+    }
+
+    @When("user fill shipping information with:")
+    public void user_fill_shipping_information_with(DataTable dataTable) {
+        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+        for (Map<String, String> row : rows) {
+            String name = row.getOrDefault("Name", "");
+            String country = row.getOrDefault("Country", "");
+            String city = row.getOrDefault("City", "");
+            String creditCard = row.getOrDefault("Credit Card", "");
+            String month = row.getOrDefault("Month", "");
+            String year = row.getOrDefault("Year", "");
+            webPage.fillShippingInformation(name, country, city, creditCard, month, year);
+        }
+    }
+
+    @Then("user see confirmation message {string}")
+    public void user_see_confirmation_message(String expectedMessage) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            // Tunggu hingga pesan konfirmasi muncul
+            WebElement confirmationField = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(), '" + expectedMessage + "')]")));
+
+            String actualMessage = confirmationField.getText();
+            Assert.assertEquals(expectedMessage, actualMessage);
+
+            // Klik tombol OK setelah memverifikasi pesan
+            WebElement okButton = driver.findElement(By.cssSelector("button.confirm.btn.btn-lg.btn-primary"));
+            okButton.click();
+        } catch (TimeoutException e) {
+            Assert.fail("Confirmation message '" + expectedMessage + "' did not appear within the timeout period.");
         }
     }
 }
