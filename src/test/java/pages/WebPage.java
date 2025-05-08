@@ -77,8 +77,10 @@ public class WebPage {
     public void selectProduct(String productName) {
         By productLocator = By.xpath("//a[normalize-space()='" + productName + "']");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement productElement = wait.until(ExpectedConditions.refreshed(
-                ExpectedConditions.elementToBeClickable(productLocator)));
+// Tunggu sampai elemen benar-benar tampil di layar
+        wait.until(ExpectedConditions.visibilityOfElementLocated(productLocator));
+// Setelah elemen terlihat, pastikan bisa diklik
+        WebElement productElement = wait.until(ExpectedConditions.elementToBeClickable(productLocator));
         productElement.click();
     }
 

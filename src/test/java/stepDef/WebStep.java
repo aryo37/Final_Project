@@ -31,7 +31,7 @@ public class WebStep {
     @Before
     public void beforeTest() {
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--headless");
+        options.addArguments("--headless");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         WebDriverManager.chromedriver().setup();
@@ -139,14 +139,14 @@ public class WebStep {
 
     @When("user choose product {string}")
     public void user_choose_product(String productName) throws InterruptedException {
-        Thread.sleep(3000);
+        Thread.sleep(1000);
         webPage.selectProduct(productName);
     }
 
     @When("user click {string} button")
     public void user_click_button(String buttonName) throws InterruptedException {
         // Handle multiple buttons by name
-        Thread.sleep(4000);
+        Thread.sleep(1000);
         switch (buttonName.toLowerCase()) {
             case "add to cart":
                 webPage.addToCart();
