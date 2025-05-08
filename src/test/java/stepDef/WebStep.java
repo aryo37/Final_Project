@@ -31,7 +31,7 @@ public class WebStep {
     @Before
     public void beforeTest() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
+        //options.addArguments("--headless");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         WebDriverManager.chromedriver().setup();
@@ -92,6 +92,7 @@ public class WebStep {
     @Given("user is on login page")
     public void userIsOnLoginPage() {
     driver.get("https://www.demoblaze.com/");
+    driver.manage().window().maximize();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement loginLink = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//*[@id=\"login2\"]")));
@@ -137,13 +138,15 @@ public class WebStep {
     }
 
     @When("user choose product {string}")
-    public void user_choose_product(String productName) {
+    public void user_choose_product(String productName) throws InterruptedException {
+        Thread.sleep(3000);
         webPage.selectProduct(productName);
     }
 
     @When("user click {string} button")
-    public void user_click_button(String buttonName) {
+    public void user_click_button(String buttonName) throws InterruptedException {
         // Handle multiple buttons by name
+        Thread.sleep(4000);
         switch (buttonName.toLowerCase()) {
             case "add to cart":
                 webPage.addToCart();
@@ -196,16 +199,15 @@ public class WebStep {
 
     @When("user fill shipping information with:")
     public void user_fill_shipping_information_with(DataTable dataTable) {
-        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-        for (Map<String, String> row : rows) {
-            String name = row.getOrDefault("Name", "");
-            String country = row.getOrDefault("Country", "");
-            String city = row.getOrDefault("City", "");
-            String creditCard = row.getOrDefault("Credit Card", "");
-            String month = row.getOrDefault("Month", "");
-            String year = row.getOrDefault("Year", "");
-            webPage.fillShippingInformation(name, country, city, creditCard, month, year);
-        }
+        Map<String, String>  rows = dataTable.asMap(String.class, String.class);
+        String name = rows.get("Name");
+        String country = rows.get("Country");
+        String city = rows.get("City");
+        String creditCard = rows.get("Credit Card");
+        String month = rows.get("Month");
+        String year = rows.get("Year");
+
+        webPage.fillShippingInformation(name, country, city, creditCard, month, year);
     }
 
     @Then("user see confirmation message {string}")
