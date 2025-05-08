@@ -23,7 +23,7 @@ public class WebPage {
     By addToCartButton = By.cssSelector("a.btn.btn-success.btn-lg");
     By cartButton = By.id("cartur");
     By placeOrderButton = By.cssSelector("button.btn.btn-success");
-    By purchaseButton = By.cssSelector("button.btn.btn-primary");
+    By purchaseButton = By.xpath("//button[normalize-space()='Purchase']");
     By confirmationMessage = By.cssSelector("h2");
 
     public WebPage(WebDriver driver) {
@@ -75,10 +75,12 @@ public class WebPage {
     }
 
     public void selectProduct(String productName) {
-        By productLocator = By.xpath("//*[@id=\"tbodyid\"]/div[1]/div/div/h4/a" + productName + "')]");
+        By productLocator = By.xpath("//a[normalize-space()='" + productName + "']");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement productElement = wait.until(ExpectedConditions.refreshed(
-                ExpectedConditions.elementToBeClickable(productLocator)));
+// Tunggu sampai elemen benar-benar tampil di layar
+        wait.until(ExpectedConditions.visibilityOfElementLocated(productLocator));
+// Setelah elemen terlihat, pastikan bisa diklik
+        WebElement productElement = wait.until(ExpectedConditions.elementToBeClickable(productLocator));
         productElement.click();
     }
 
@@ -92,7 +94,7 @@ public class WebPage {
             wait.until(ExpectedConditions.alertIsPresent());
             Alert alert = driver.switchTo().alert();
             System.out.println("Alert text: " + alert.getText()); // Opsional, untuk debugging
-            alert.accept(); // Klik OK pada alert
+
         } catch (NoAlertPresentException e) {
             // Jika tidak ada alert, lanjutkan seperti biasa
         } catch (StaleElementReferenceException e) {
