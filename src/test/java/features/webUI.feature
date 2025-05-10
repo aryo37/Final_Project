@@ -11,8 +11,8 @@ Feature: Test Automation Web UI
   @web
   Scenario: Login with valid username and password
     Given user is on login page
-    When user input to username with "aldi2025"
-    And user input to password with "ingat123"
+    When user input to username with "jecko909"
+    And user input to password with "jeje123"
     And user click login button
     Then user will redirect to homepage after login
 
@@ -27,8 +27,8 @@ Feature: Test Automation Web UI
   @web
   Scenario: End to end test from login to checkout
     Given user is on login page
-    When user input to username with "aldi2025"
-    And user input to password with "ingat123"
+    When user input to username with "jecko909"
+    And user input to password with "jeje123"
     And user click login button
     Then user will redirect to homepage after login
     Given user is on the product page
@@ -47,8 +47,8 @@ Feature: Test Automation Web UI
   @web
   Scenario: Checkout with empty shipping information
     Given user is on login page
-    When user input to username with "aldi2025"
-    And user input to password with "ingat123"
+    When user input to username with "jecko909"
+    And user input to password with "jeje123"
     And user click login button
     Then user will redirect to homepage after login
     Given user is on the product page
