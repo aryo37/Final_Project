@@ -6,7 +6,7 @@ Feature: Test Automation Web UI
     When user input username with "aldi2025"
     And user input password with "ingat123"
     And user click sign up button
-    Then user will redirect to homepage
+    Then user will redirect to homepage after sign up
 
   @web
   Scenario: Login with valid username and password
@@ -14,44 +14,51 @@ Feature: Test Automation Web UI
     When user input to username with "aldi2025"
     And user input to password with "ingat123"
     And user click login button
-    Then user will redirect to homepage
+    Then user will redirect to homepage after login
 
   @web
   Scenario: Login with invalid username and password
     Given user is on login page
-    When user input to username with "user_lain"
+    When user input to username with "user_tidak_dipakai"
     And user input to password with "coba_coba"
     And user click login button
-    Then A message appears "User does not exist."
+    Then A message appears "No alert present"
 
   @web
   Scenario: End to end test from login to checkout
     Given user is on login page
-    When user input to username with "Aryo"
+    When user input to username with "aldi2025"
     And user input to password with "ingat123"
     And user click login button
-    Then user will redirect to homepage
-    When user choose product "Samsung galaxy s6"
-    And user click "Add to Cart" button
+    Then user will redirect to homepage after login
+    Given user is on the product page
+    When user choose product "Nexus 6"
+    And user click Add to cart button
+    Then user should be redirected to Cart page with title "STORE"
     And user click "Cart" button
+    And User should be redirected to "https://www.demoblaze.com/cart.html"
     And user click "Place Order" button
-    And user fill shipping information with:
-      | Name | Aldi |
-      | Country   | Indonesia |
-      | City      | Jakarta |
-      | Credit Card | 4111111111111111 |
-      | Month   | 12 |
-      | Year   | 25 |
+    And User fills the order form with:
+      | Name         | Country   | City      | Credit card | Month | Year |
+      | aldi     | Indonesia | Jakarta   | 1234567890  | 12    | 2025 |
     And user click "Purchase" button
-    Then user see confirmation message "Thank you for your purchase!"
+    Then "Thank you for your purchase!" message should appear
 
   @web
   Scenario: Checkout with empty shipping information
-    Given user is logged in as "aldi2025"
-    And user has product "Samsung galaxy s6" in cart
-    When user click "Place Order" button
-    And user leave all shipping information empty
-    And user click "Purchase" button
-    Then A message appears "Please fill out Name and Creditcard."
+    Given user is on login page
+    When user input to username with "aldi2025"
+    And user input to password with "ingat123"
+    And user click login button
+    Then user will redirect to homepage after login
+    Given user is on the product page
+    When user choose product "Nexus 6"
+    And user click Add to cart button
+    Then user should be redirected to Cart page with title "STORE"
+    And user click "Cart" button
+    And User should be redirected to "https://www.demoblaze.com/cart.html"
+    And user click "Place Order" button
+    When User attempts to checkout without filling required fields
+    Then an alert with text "Please fill out Name and Creditcard." should appear
 
 
