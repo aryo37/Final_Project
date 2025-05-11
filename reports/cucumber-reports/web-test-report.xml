@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Cucumber" time="71.437" tests="9" skipped="0" failures="0" errors="0" timestamp="2025-05-10T13:28:33.966373300Z">
-<testcase classname="Test Automation Rest Api" name="Test get list user" time="4.545">
+<testsuite name="Cucumber" time="188.679" tests="9" skipped="0" failures="0" errors="0" timestamp="2025-05-11T06:47:29.715779900Z">
+<testcase classname="Test Automation Rest Api" name="Test get list user" time="4.546">
 <system-out><![CDATA[
 Given prepare url valid for "GET_LIST_USERS"................................passed
 And hit api get list users..................................................passed
@@ -9,7 +9,7 @@ Then validation response body get list users................................pass
 Then validation response json with JSONSchema "get_list_users.json".........passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Rest Api" name="Test get user by id" time="0.588">
+<testcase classname="Test Automation Rest Api" name="Test get user by id" time="0.595">
 <system-out><![CDATA[
 Given prepare url valid for get user by id "60d0fe4f5311236168a109ce".......passed
 When hit api get user.......................................................passed
@@ -18,7 +18,7 @@ And validation response body get user by id.................................pass
 And validation response json with JSONSchema "get_user_by_id.json"..........passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Rest Api" name="Test create new user" time="0.519">
+<testcase classname="Test Automation Rest Api" name="Test create new user" time="0.526">
 <system-out><![CDATA[
 Given prepare valid request payload for new user............................passed
 And prepare url valid for "CREATE_NEW_USER".................................passed
@@ -28,7 +28,7 @@ And validation response body create new user................................pass
 And validation response json with JSONSchema "create_users_normal.json".....passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Rest Api" name="Test delete user normal" time="1.111">
+<testcase classname="Test Automation Rest Api" name="Test delete user normal" time="0.958">
 <system-out><![CDATA[
 Given prepare url valid for get user by id "60d0fe4f5311236168a109cf".......passed
 When hit api get user.......................................................passed
@@ -38,7 +38,7 @@ And hit api delete user.....................................................pass
 Then validation status code is equals 400...................................passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Web UI" name="Sign up with valid username and password" time="6.482">
+<testcase classname="Test Automation Web UI" name="Sign up with valid username and password" time="6.147">
 <system-out><![CDATA[
 Given user is on sign up page...............................................passed
 When user input username with "aldi2025"....................................passed
@@ -47,7 +47,7 @@ And user click sign up button...............................................pass
 Then user will redirect to homepage after sign up...........................passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Web UI" name="Login with valid username and password" time="8.999">
+<testcase classname="Test Automation Web UI" name="Login with valid username and password" time="10.245">
 <system-out><![CDATA[
 Given user is on login page.................................................passed
 When user input to username with "jecko909".................................passed
@@ -56,7 +56,7 @@ And user click login button.................................................pass
 Then user will redirect to homepage after login.............................passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Web UI" name="Login with invalid username and password" time="10.831">
+<testcase classname="Test Automation Web UI" name="Login with invalid username and password" time="11.11">
 <system-out><![CDATA[
 Given user is on login page.................................................passed
 When user input to username with "user_tidak_dipakai".......................passed
@@ -65,13 +65,13 @@ And user click login button.................................................pass
 Then A message appears "No alert present"...................................passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Web UI" name="End to end test from login to checkout" time="20.079">
+<testcase classname="Test Automation Web UI" name="End to end test from login to checkout" time="128.042">
 <system-out><![CDATA[
 Given user is on login page.................................................passed
-When user input to username with "jecko909".................................passed
-And user input to password with "jeje123"...................................passed
+When user input to username with "cicinew"..................................passed
+And user input to password with "cicibaru"..................................passed
 And user click login button.................................................passed
-Then user will redirect to homepage after login.............................passed
+Then user will redirect to homepage.........................................passed
 Given user is on the product page...........................................passed
 When user choose product "Nexus 6"..........................................passed
 And user click Add to cart button...........................................passed
@@ -84,13 +84,13 @@ And user click "Purchase" button............................................pass
 Then "Thank you for your purchase!" message should appear...................passed
 ]]></system-out>
 </testcase>
-<testcase classname="Test Automation Web UI" name="Checkout with empty shipping information" time="17.955">
+<testcase classname="Test Automation Web UI" name="Checkout with empty shipping information" time="26.078">
 <system-out><![CDATA[
 Given user is on login page.................................................passed
-When user input to username with "jecko909".................................passed
-And user input to password with "jeje123"...................................passed
+When user input to username with "bobanew"..................................passed
+And user input to password with "bobabaru"..................................passed
 And user click login button.................................................passed
-Then user will redirect to homepage after login.............................passed
+Then user will redirect to homepage.........................................passed
 Given user is on the product page...........................................passed
 When user choose product "Nexus 6"..........................................passed
 And user click Add to cart button...........................................passed

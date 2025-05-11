@@ -60,5 +60,5 @@ Feature: Test Automation Web UI
     And user click "Place Order" button
     When User attempts to checkout without filling required fields
     Then an alert with text "Please fill out Name and Creditcard." should appear
-
+    Then I close the browser securely
 

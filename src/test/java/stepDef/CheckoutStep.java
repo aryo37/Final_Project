@@ -185,4 +185,33 @@ public class CheckoutStep extends BaseSteps{
             Assertions.fail("Alert dengan teks '" + expectedAlertText + "' tidak muncul dalam 15 detik");
         }
     }
+
+    @Then("I close the browser securely")
+    public void close_browser_securely() {
+        try {
+            // 1. Tangani alert yang mungkin masih terbuka
+            try {
+                driver.switchTo().alert().dismiss();
+            } catch (NoAlertPresentException ignore) {}
+
+            // 2. Tutup browser dengan benar
+            if (driver != null) {
+                driver.quit();
+                System.out.println("Browser closed successfully");
+
+                // 3. Bersihkan referensi
+                driver = null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error while closing browser: " + e.getMessage());
+
+            // 4. Fallback: force kill jika diperlukan
+            try {
+                Runtime.getRuntime().exec("taskkill /F /IM chromedriver.exe /T");
+                Runtime.getRuntime().exec("taskkill /F /IM chrome.exe /T");
+            } catch (IOException ioEx) {
+                System.err.println("Force kill failed: " + ioEx.getMessage());
+            }
+        }
+    }
 }

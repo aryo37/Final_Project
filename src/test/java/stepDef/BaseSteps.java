@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.UUID;
 
 public class BaseSteps {
     protected static WebDriver driver;
@@ -21,7 +22,10 @@ public class BaseSteps {
     @Before
     public void setup() {
         System.out.println("Setting up driver...");
+        WebDriverManager.chromedriver().clearDriverCache().setup();
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--user-data-dir=/tmp/chrome_profile_" + UUID.randomUUID());
+        options.addArguments("--remote-allow-origins=*");
         options.addArguments("--headless");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
