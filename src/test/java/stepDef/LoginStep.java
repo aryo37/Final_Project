@@ -22,7 +22,7 @@ import java.time.Duration;
 public class LoginStep extends BaseSteps {
 //    private WebDriver driver;
     private LoginPage loginPage;
-//    private HomePage homePage;
+    private HomePage homePage;
     private ProductPage productPage;
     private final By ADD_TO_CART_BUTTON = By.xpath("//a[contains(.,'Add to cart')]");
 
@@ -67,20 +67,20 @@ public class LoginStep extends BaseSteps {
 
     @Then("user will redirect to homepage after login")
     public void userWillRedirectToHomepageAfterLogin() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser")));
 
-        // Verify URL first
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser")));
-
-//        homePage = new HomePage(driver);
-//
-//        // Multiple verification points
-//        boolean isLoggedIn = homePage.isWelcomeDisplayed() ||
-//                homePage.isLogoutDisplayed() ||
-//                driver.getCurrentUrl().equals("https://demoblaze.com/");
-
-//        Assert.assertTrue("Login failed or not redirected to homepage", isLoggedIn);
-//        driver.quit();
+            homePage = new HomePage(driver);
+            boolean isHomepageLoaded = homePage.isWelcomeDisplayed() ||
+                    homePage.isLogoutDisplayed() ||
+                    driver.getCurrentUrl().equals("https://demoblaze.com/");
+            Assert.assertTrue("User was not redirected to homepage", isHomepageLoaded);
+        } finally {
+            if (driver != null) {
+                driver.quit();
+            }
+        }
     }
 
     @Then("A message appears {string}")
@@ -144,5 +144,33 @@ public class LoginStep extends BaseSteps {
         Alert alert = wait.until(ExpectedConditions.alertIsPresent());
         Assert.assertEquals("Product added", alert.getText());
         alert.accept();
+    }
+
+    @Then("user will redirect to homepage")
+    public void userWillRedirectToHomepage() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15)); // Timeout diperpanjang
+
+        // Verifikasi multiple kondisi dengan pesan error yang spesifik
+        try {
+            // Verifikasi element 'nameofuser' terlihat dahulu
+            WebElement userElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser")));
+
+            homePage = new HomePage(driver);
+
+            // Verifikasi URL benar
+            String expectedUrl = "https://demoblaze.com/";
+            String actualUrl = driver.getCurrentUrl();
+            Assert.assertEquals("URL tidak sesuai dengan homepage", expectedUrl, actualUrl);
+
+            // Verifikasi minimal satu element homepage terlihat
+            boolean isWelcomeVisible = homePage.isWelcomeDisplayed();
+            boolean isLogoutVisible = homePage.isLogoutDisplayed();
+
+            Assert.assertTrue("Tidak ada elemen welcome/logout yang terlihat di homepage",
+                    isWelcomeVisible || isLogoutVisible);
+
+        } catch (TimeoutException e) {
+            throw new AssertionError("Element 'nameofuser' tidak muncul dalam 15 detik", e);
+        }
     }
 }

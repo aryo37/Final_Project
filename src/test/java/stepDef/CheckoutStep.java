@@ -1,5 +1,6 @@
 package stepDef;
 
+import helper.Utility;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -15,7 +16,10 @@ import pages.OrderModal;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import static helper.Utility.takeScreenshot;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -85,26 +89,41 @@ public class CheckoutStep extends BaseSteps{
     public void message_should_appear(String expectedMessage) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // Tunggu dan verifikasi pesan
-        WebElement thankYouMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(thankYouMessageLocator));
-        assertEquals("Thank you for your purchase!", thankYouMessage.getText().trim());
-
-        // Klik tombol OK
-        WebElement okButton = wait.until(ExpectedConditions.elementToBeClickable(okButtonLocator));
-        okButton.click();
-
-        // Verifikasi modal tertutup
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(thankYouMessageLocator));
-    }
-
-    private void takeScreenshot(String fileName) {
-        File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         try {
-            FileUtils.copyFile(screenshot, new File("target/screenshots/" + fileName + "_" + System.currentTimeMillis() + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            // 1. Verifikasi pesan
+            WebElement thankYouMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(thankYouMessageLocator));
+            assertEquals(expectedMessage, thankYouMessage.getText().trim());
+            takeScreenshot(driver, "Thank you for your purchase!");  // Screenshot pesan sukses
+
+            // 2. Klik tombol OK
+            WebElement okButton = wait.until(ExpectedConditions.elementToBeClickable(okButtonLocator));
+            okButton.click();
+            takeScreenshot(driver, "after-ok-click");  // Screenshot setelah klik
+
+            // 3. Verifikasi modal tertutup
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(thankYouMessageLocator));
+
+        } catch (Exception e) {
+            takeScreenshot(driver, "error-on-purchase-confirmation");  // Screenshot jika error
+            throw e;  // Re-throw exception agar Cucumber mencatat test sebagai failed
+        } finally {
+            // 4. Pastikan browser ditutup setelah selesai
+            if (driver != null) {
+                driver.quit();
+            }
         }
     }
+
+//    private void takeScreenshot(String fileName) {
+//        try {
+//            File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+//            String path = "target/screenshots/" + fileName + "_" + timestamp + ".png";
+//            FileUtils.copyFile(screenshot, new File(path));
+//        } catch (Exception e) {
+//            System.err.println("Gagal mengambil screenshot: " + e.getMessage());
+//        }
+//    }
 
     @And("Close the browser")
     public void close_the_browser() {
@@ -132,22 +151,38 @@ public class CheckoutStep extends BaseSteps{
 
     @Then("an alert with text {string} should appear")
     public void an_alert_with_text_should_appear(String expectedAlertText) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
         try {
-            // Tunggu alert muncul
-            wait.until(ExpectedConditions.alertIsPresent());
-            Alert alert = driver.switchTo().alert();
+            // 1. Tunggu alert muncul
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 
-            // Verifikasi teks alert
+            // 2. Verifikasi teks alert
             String actualAlertText = alert.getText();
-            Assertions.assertEquals(expectedAlertText, actualAlertText,
-                    "Alert text doesn't match expected");
+            if (!expectedAlertText.equals(actualAlertText)) {
+                // Jika teks tidak match, tangkap screenshot SEBELUM menutup alert
+                try {
+                    driver.switchTo().defaultContent();
+                    Utility.takeScreenshot(driver, "alert-text-mismatch");
+                } catch (Exception e) {
+                    System.err.println("Warning: Failed to take screenshot - " + e.getMessage());
+                }
+                Assertions.fail(String.format(
+                        "Expected alert text: '%s' but got: '%s'",
+                        expectedAlertText, actualAlertText));
+            }
 
-            // Tutup alert
+            // 3. Tangani alert
             alert.accept();
-        } catch (NoAlertPresentException e) {
-            Assertions.fail("Alert not present: " + e.getMessage());
+
         } catch (TimeoutException e) {
-            Assertions.fail("Alert didn't appear within timeout: " + e.getMessage());
+            // 4. Tangani kasus alert tidak muncul
+            try {
+                Utility.takeScreenshot(driver, "alert-not-appeared");
+            } catch (Exception screenshotEx) {
+                System.err.println("Warning: Failed to take screenshot - " + screenshotEx.getMessage());
+            }
+            Assertions.fail("Alert dengan teks '" + expectedAlertText + "' tidak muncul dalam 15 detik");
         }
     }
 }

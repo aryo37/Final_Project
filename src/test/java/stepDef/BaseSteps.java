@@ -33,11 +33,14 @@ public class BaseSteps {
         System.out.println("Driver setup completed");
     }
 
-    @AfterAll
-    public static void tearDown() {
-        if (driver != null) {
-            System.out.println("Menutup browser setelah semua tes selesai");
-            driver.quit(); // Gunakan quit() untuk menutup semua window dan proses browser
+    @After
+    public void tearDown() {
+        try {
+            if (driver != null) {
+                driver.quit();
+            }
+        } catch (Exception e) {
+            System.err.println("Error closing browser: " + e.getMessage());
         }
     }
 

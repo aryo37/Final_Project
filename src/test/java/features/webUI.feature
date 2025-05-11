@@ -27,10 +27,10 @@ Feature: Test Automation Web UI
   @web
   Scenario: End to end test from login to checkout
     Given user is on login page
-    When user input to username with "jecko909"
-    And user input to password with "jeje123"
+    When user input to username with "cicinew"
+    And user input to password with "cicibaru"
     And user click login button
-    Then user will redirect to homepage after login
+    Then user will redirect to homepage
     Given user is on the product page
     When user choose product "Nexus 6"
     And user click Add to cart button
@@ -47,10 +47,10 @@ Feature: Test Automation Web UI
   @web
   Scenario: Checkout with empty shipping information
     Given user is on login page
-    When user input to username with "jecko909"
-    And user input to password with "jeje123"
+    When user input to username with "bobanew"
+    And user input to password with "bobabaru"
     And user click login button
-    Then user will redirect to homepage after login
+    Then user will redirect to homepage
     Given user is on the product page
     When user choose product "Nexus 6"
     And user click Add to cart button
