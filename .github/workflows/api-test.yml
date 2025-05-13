@@ -31,4 +31,4 @@ jobs:
         if: always()
         with:
           name: api-test-reports
-          path: reports/api  # Ganti dengan path yang sesuai untuk laporan pengujian API
+          path: reports  # Ganti dengan path yang sesuai untuk laporan pengujian API
